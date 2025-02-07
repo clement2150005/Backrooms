@@ -28,7 +28,7 @@ void	chapter_1(t_game *game, int *running)
 	if (first)
 		first_time_chapter_called(game, &first, running);
 	if (chapter_end)
-		I++;
+		LEVEL++;
 }
 
 void	chapter_2(t_game *game, int *running)
@@ -39,7 +39,7 @@ void	chapter_2(t_game *game, int *running)
 	chapter_end = FALSE;
 	first_time_chapter_called(game, &first, running);
 	if (chapter_end)
-		I++;
+		LEVEL++;
 }
 
 void	chapter_3(t_game *game, int *running)
@@ -50,7 +50,7 @@ void	chapter_3(t_game *game, int *running)
 	chapter_end = FALSE;
 	first_time_chapter_called(game, &first, running);
 	if (chapter_end)
-		I++;
+		LEVEL++;
 }
 
 void	chapter_4(t_game *game, int *running)
@@ -61,7 +61,7 @@ void	chapter_4(t_game *game, int *running)
 	chapter_end = FALSE;
 	first_time_chapter_called(game, &first, running);
 	if (chapter_end)
-		I++;
+		LEVEL++;
 }
 
 void	chapter_5(t_game *game, int *running)
