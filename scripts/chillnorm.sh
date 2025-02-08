@@ -1,5 +1,39 @@
 #!/bin/bash
 
-mv minilibx-linux .minilibx-linux
-norminette | grep -v OK! | grep -v "Comment is invalid in this scope" | grep -v "Empty line in function" | grep -v "line too long"
-mv .minilibx-linux minilibx-linux
+mv libs .libs
+
+norminette \
+    | grep -v OK! \
+    | grep -v INVALID_HEADER \
+    | grep -v LINE_TOO_LONG \
+    | grep -v PREPROC_CONSTANT \
+    | grep -v TOO_MANY_FUNCS \
+    | grep -v TERNARY_FBIDDEN \
+    | grep -v DECL_ASSIGN_LINE \
+    | grep -v TOO_MANY_LINES \
+    | grep -v FORBIDDEN_CS \
+    | grep -v WRONG_SCOPE_VAR \
+    | grep -v OK \
+    | grep -v OK \
+    | grep -v OK \
+    | grep -v OK \
+    | grep -v OK \
+    | awk '
+    {
+        line[NR] = $0
+    }
+    END {
+        for (i = 1; i < NR; i++) {
+            if (line[i] ~ /Error!/ && line[i+1] ~ /Error!/) {
+                continue
+            }
+            print line[i]
+        }
+        if (line[NR] !~ /Error!/) {
+            print line[NR]
+        }
+    }'
+
+mv .libs libs
+
+

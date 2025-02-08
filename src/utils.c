@@ -12,10 +12,12 @@
 
 #include <backrooms.h>
 
-char *strjoin(const char *s1, const char *s2)
+char	*strjoin(const char *s1, const char *s2)
 {
-	size_t len1;
-	size_t len2;
+	size_t	len1;
+	size_t	len2;
+	char	*result;
+
 	if (!s1 && !s2)
 		return (NULL);
 	if (!s1)
@@ -24,12 +26,12 @@ char *strjoin(const char *s1, const char *s2)
 		return (strdup(s1));
 	len1 = strlen(s1);
 	len2 = strlen(s2);
-	char *result = malloc(len1 + len2 + 1);
+	result = malloc(len1 + len2 + 1);
 	if (!result)
 		return (NULL);
 	strcpy(result, s1);
 	strcat(result, s2);
-	return result;
+	return (result);
 }
 
 char	*read_from_file(int fd, char *leftover)
@@ -118,4 +120,3 @@ char	*get_next_line(int fd)
 	free(temp);
 	return (next_line);
 }
-

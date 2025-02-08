@@ -12,11 +12,11 @@
 
 #include <backrooms.h>
 
-void find_entities(t_game *game, int i)
+void	find_entities(t_game *game, int i)
 {
-	int y = 0;
-	int x;
-	int e = 0;
+	int	x;
+	int	y = 0;
+	int	e = 0;
 
 	while (MAPS[i][y])
 	{
@@ -31,23 +31,23 @@ void find_entities(t_game *game, int i)
 				game->player[i]->y = y + 0.5;
 				if (MAPS[i][y][x] == P_NORTH)
 				{
-					game->player[i]->dir.x = 0; 
-					game->player[i]->dir.y = -1; 
+					game->player[i]->dir.x = 0;
+					game->player[i]->dir.y = -1;
 				}
 				if (MAPS[i][y][x] == P_SOUTH)
 				{
-					game->player[i]->dir.x = 0; 
-					game->player[i]->dir.y = 1; 
+					game->player[i]->dir.x = 0;
+					game->player[i]->dir.y = 1;
 				}
 				if (MAPS[i][y][x] == P_EAST)
 				{
-					game->player[i]->dir.x = 1; 
-					game->player[i]->dir.y = 0; 
+					game->player[i]->dir.x = 1;
+					game->player[i]->dir.y = 0;
 				}
 				if (MAPS[i][y][x] == P_WEST)
 				{
-					game->player[i]->dir.x = -1; 
-					game->player[i]->dir.y = 0; 
+					game->player[i]->dir.x = -1;
+					game->player[i]->dir.y = 0;
 				}
 				MAPS[i][y][x] = EMPTY;
 			}
@@ -60,23 +60,23 @@ void find_entities(t_game *game, int i)
 				game->enemy[i][e]->y = y + 0.5;
 				if (MAPS[i][y][x] == E_NORTH)
 				{
-					game->enemy[i][e]->dir.x = 0; 
-					game->enemy[i][e]->dir.y = -1; 
+					game->enemy[i][e]->dir.x = 0;
+					game->enemy[i][e]->dir.y = -1;
 				}
 				if (MAPS[i][y][x] == E_SOUTH)
 				{
-					game->enemy[i][e]->dir.x = 0; 
-					game->enemy[i][e]->dir.y = 1; 
+					game->enemy[i][e]->dir.x = 0;
+					game->enemy[i][e]->dir.y = 1;
 				}
 				if (MAPS[i][y][x] == E_EAST)
 				{
-					game->enemy[i][e]->dir.x = 1; 
-					game->enemy[i][e]->dir.y = 0; 
+					game->enemy[i][e]->dir.x = 1;
+					game->enemy[i][e]->dir.y = 0;
 				}
 				if (MAPS[i][y][x] == E_WEST)
 				{
-					game->enemy[i][e]->dir.x = -1; 
-					game->enemy[i][e]->dir.y = 0; 
+					game->enemy[i][e]->dir.x = -1;
+					game->enemy[i][e]->dir.y = 0;
 				}
 				e++;
 				MAPS[i][y][x] = EMPTY;
@@ -87,9 +87,9 @@ void find_entities(t_game *game, int i)
 	}
 }
 
-void init_entities(t_game *game)
+void	init_entities(t_game *game)
 {
-	int i = 0;
+	int	i = 0;
 
 	game->player = malloc(sizeof(t_entity *) * NUMBER_OF_MAPS);
 	game->enemy = malloc(sizeof(t_entity **) * NUMBER_OF_MAPS);
@@ -103,12 +103,12 @@ void init_entities(t_game *game)
 
 void	init_maps(t_game *game)
 {
-	char *path;
-	int i = 1;
+	char	*path;
+	int		i = 1;
 
 	MAPS = malloc(sizeof(char **) * (NUMBER_OF_MAPS + 1));
 	if (!MAPS)
-		return;
+		return ;
 	while (i <= NUMBER_OF_MAPS)
 	{
 		path = get_path(i);
@@ -118,7 +118,7 @@ void	init_maps(t_game *game)
 		{
 			free(MAPS);
 			MAPS = NULL;
-			return;
+			return ;
 		}
 		i++;
 	}
@@ -137,7 +137,7 @@ void	game_struct_init(t_game *game)
 	print_all_maps(game);
 	init_entities(game);
 	print_entities(game);
-	KEYS = malloc(sizeof(int) *  HOW_MANY_KEYS);
+	KEYS = malloc(sizeof(int) * HOW_MANY_KEYS);
 }
 
 void	graphics_init(t_game *game)
@@ -148,7 +148,7 @@ void	graphics_init(t_game *game)
 		cleanup(game);
 		exit(EXIT_FAILURE);
 	}
-	WINDOW = SDL_CreateWindow("Backrooms", SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_RESIZABLE);
+	WINDOW = SDL_CreateWindow("Backrooms", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_RESIZABLE);
 	if (!WINDOW)
 	{
 		printf("SDL_CreateWindow Error: %s\n", SDL_GetError());
@@ -165,10 +165,9 @@ void	graphics_init(t_game *game)
 		exit(EXIT_FAILURE);
 	}
 	SDL_GetWindowSize(WINDOW, &WIND_WIDTH, &WIND_HEIGHT);
-
 }
 
-t_game	*game_init()
+t_game	*game_init(void)
 {
 	t_game	*game;
 
