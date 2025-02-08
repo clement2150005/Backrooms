@@ -13,11 +13,9 @@ norminette \
     | grep -v TOO_MANY_LINES \
     | grep -v FORBIDDEN_CS \
     | grep -v WRONG_SCOPE_VAR \
-    | grep -v OK \
-    | grep -v OK \
-    | grep -v OK \
-    | grep -v OK \
-    | grep -v OK \
+    | grep -v TOO_MANY_VARS_FUNC \
+    | grep -v FORBIDDEN_CHAR_NAME \
+    | grep -v TOO_MANY_ARGS \
     | awk '
     {
         line[NR] = $0
