@@ -40,7 +40,6 @@ void	handle_events(t_game *game, int *running)
 {
 	while (SDL_PollEvent(&EVENT))
 	{
-		printf("event%c------------------------%c", 10, 10); fflush(stdout); //debug
 		if (EVENT.type == SDL_QUIT)
 		{
 			*running = 0;

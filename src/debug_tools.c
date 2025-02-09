@@ -26,8 +26,8 @@ void	debug_statements(t_game *game)
 
 static void	draw_vectors(t_game *game)
 {
-	int		x;
-	int		y;
+	int			x;
+	int			y;
 	t_float_xy	vec;
 	SDL_Rect	center;
 
@@ -36,7 +36,7 @@ static void	draw_vectors(t_game *game)
 		for (x = 0; game->maps[LEVEL][y][x] != '\0'; x++)
 		{
 			if (game->maps[LEVEL][y][x] != EMPTY)
-				continue;
+				continue ;
 			vec = game->vector_grid[LEVEL][y][x];
 			center.x = x * MINIMAP_BLOCK + MINIMAP_BLOCK / 2;
 			center.y = y * MINIMAP_BLOCK + MINIMAP_BLOCK / 2;
@@ -85,7 +85,8 @@ void	draw_minimap(t_game *game)
 	SDL_RenderDrawLine(RENDERER, PLAYER_X * MINIMAP_BLOCK, PLAYER_Y * MINIMAP_BLOCK,
 		PLAYER_X * MINIMAP_BLOCK + (PLAYER_DIR_X * MINIMAP_BLOCK),
 		PLAYER_Y * MINIMAP_BLOCK + (PLAYER_DIR_Y * MINIMAP_BLOCK));
-	draw_vectors(game);
+	if (SHOW_PATH_FIND)
+		draw_vectors(game);
 }
 
 void	print_entities(t_game *game)
