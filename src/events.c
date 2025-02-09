@@ -12,7 +12,7 @@
 
 #include <backrooms.h>
 
-void	keydown(t_game *game, SDL_KeyCode code)
+static void	keydown(t_game *game, SDL_KeyCode code)
 {
 	if (code == SDLK_w && !KEYS[S])
 		KEYS[W] = TRUE;
@@ -24,7 +24,7 @@ void	keydown(t_game *game, SDL_KeyCode code)
 		KEYS[D] = TRUE;
 }
 
-void	keyup(t_game *game, SDL_KeyCode code)
+static void	keyup(t_game *game, SDL_KeyCode code)
 {
 	if (code == SDLK_w)
 		KEYS[W] = FALSE;
@@ -40,6 +40,7 @@ void	handle_events(t_game *game, int *running)
 {
 	while (SDL_PollEvent(&EVENT))
 	{
+		printf("event%c------------------------%c", 10, 10); fflush(stdout); //debug
 		if (EVENT.type == SDL_QUIT)
 		{
 			*running = 0;

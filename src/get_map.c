@@ -25,7 +25,7 @@ char	*get_path(int i)
 	return (path);
 }
 
-void	copy_old_map(char **new_map, char **old_map)
+static void	copy_old_map(char **new_map, char **old_map)
 {
 	int		i;
 
@@ -38,7 +38,7 @@ void	copy_old_map(char **new_map, char **old_map)
 	new_map[i] = NULL;
 }
 
-int	expand_map_capacity(char ***map, int *map_capacity)
+static int	expand_map_capacity(char ***map, int *map_capacity)
 {
 	int		new_capacity;
 	char	**new_map;
