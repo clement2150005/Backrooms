@@ -7,32 +7,10 @@
 // 		|____/ \__,_|\___|_|\_|_|  \___/ \___/|_| |_| |_|___/		//
 //																	//
 //			Author:   Clement Colin									//
-//			Created:  February 6, 2025								//
+//			Created:  February 14, 2025								//
 //==================================================================*/
 
 #include <backrooms.h>
-
-char	*strjoin(const char *s1, const char *s2)
-{
-	size_t	len1;
-	size_t	len2;
-	char	*result;
-
-	if (!s1 && !s2)
-		return (NULL);
-	if (!s1)
-		return (strdup(s2));
-	if (!s2)
-		return (strdup(s1));
-	len1 = strlen(s1);
-	len2 = strlen(s2);
-	result = malloc(len1 + len2 + 1);
-	if (!result)
-		return (NULL);
-	strcpy(result, s1);
-	strcat(result, s2);
-	return (result);
-}
 
 static char	*read_from_file(int fd, char *leftover)
 {
@@ -41,7 +19,10 @@ static char	*read_from_file(int fd, char *leftover)
 
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
-		return (NULL);
+	{
+		fprintf(stderr, "ERROR: memory allocation failed in read_from_file");
+		exit(EXIT_FAILURE);
+	}
 	memset(buffer, 0, BUFFER_SIZE);
 	while (!strchr(buffer, '\n'))
 	{
@@ -73,6 +54,11 @@ static char	*find_line(char *leftover)
 	while (leftover[i] != '\n' && leftover[i])
 		i++;
 	str = malloc(sizeof(char) * (i + 2));
+	if (!str)
+	{
+		fprintf(stderr, "ERROR: memory allocation failed in find_line");
+		exit(EXIT_FAILURE);
+	}
 	while (i > j)
 	{
 		str[j] = leftover[j];
