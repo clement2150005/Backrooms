@@ -43,7 +43,7 @@ static void	graphics_init(t_game *game)
 		cleanup(game);
 		exit(EXIT_FAILURE);
 	}
-	RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED);
+	RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	if (!RENDERER)
 	{
 		printf("SDL_CreateRenderer Error: %s\n", SDL_GetError());
@@ -51,7 +51,6 @@ static void	graphics_init(t_game *game)
 		cleanup(game);
 		exit(EXIT_FAILURE);
 	}
-	SDL_SetHint(SDL_HINT_RENDER_VSYNC, "0");
 	SDL_GetWindowSize(WINDOW, &WIND_WIDTH, &WIND_HEIGHT);
 }
 
@@ -67,5 +66,6 @@ t_game	*game_init(void)
 	}
 	graphics_init(game);
 	game_struct_init(game);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 	return (game);
 }
