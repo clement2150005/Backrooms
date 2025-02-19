@@ -1,0 +1,3 @@
+_libiconv _iconv
+_libiconv_open _iconv_open
+_libiconv_close _iconv_close

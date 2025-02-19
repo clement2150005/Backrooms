@@ -138,6 +138,15 @@ void	load_textures(t_game *game)
 	load_texture(game, "./assets/textures/png/floor.png", &game->textures.floor);
 }
 
+void	sound_init(t_game *game)
+{
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	{
+		fprintf(stderr, "SDL_mixer Error: %s\n", Mix_GetError());
+		cleanup(game);
+	}	
+}
+
 t_game	*game_init(void)
 {
 	t_game	*game;
@@ -150,6 +159,7 @@ t_game	*game_init(void)
 	}
 	controller_init(game);
 	graphics_init(game);
+	sound_init(game);
 	load_textures(game);
 	game_struct_init(game);
 	SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "0");
