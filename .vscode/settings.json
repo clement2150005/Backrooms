@@ -1,5 +1,6 @@
 {
 	"files.associations": {
-		"backrooms.h": "c"
+		"backrooms.h": "c",
+		"variant": "c"
 	}
 }
