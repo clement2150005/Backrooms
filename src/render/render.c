@@ -103,7 +103,6 @@ static void half_block_up(t_game *game, t_raycaster *r, void *pixels)
 	Uint32		*pixel_data = (Uint32 *)pixels;
 	Uint32		*texture;
 
-	SDL_SetTextureColorMod(game->textures.wall.texture, 255, 255, 255);
 	wind_height = WIND_HEIGHT;
 	tex_w = game->textures.wall.width;
 	tex_h = game->textures.wall.height;
@@ -152,7 +151,6 @@ static void half_block_up(t_game *game, t_raycaster *r, void *pixels)
 			tex_pos += tex_step;
 		}
 	}
-	SDL_SetTextureColorMod(game->textures.wall.texture, 255, 255, 255);
 }
 
 static void draw_wall(t_game *game, t_raycaster *r, void *pixels)
@@ -210,7 +208,7 @@ static void draw_wall(t_game *game, t_raycaster *r, void *pixels)
 	}
 }
 
-void	draw_floor_tile(t_game *game, t_floor_ceiling *f)
+void	draw_floor_tile(t_game *game, t_floor_ceiling *f, t_rendering_threads *thread)
 {
 	int		px, py, cell_x, cell_y;
 	int		floor_tx, floor_ty;
@@ -227,11 +225,11 @@ void	draw_floor_tile(t_game *game, t_floor_ceiling *f)
 		row_distance = (pos_z / p) * 2;
 		step_x = row_distance * (f->ray_dir_x_1 - f->ray_dir_x_0) / WIND_WIDTH;
 		step_y = row_distance * (f->ray_dir_y_1 - f->ray_dir_y_0) / WIND_WIDTH;
-		floor_x = PLAYER_X + row_distance * f->ray_dir_x_0;
-		floor_y = PLAYER_Y + row_distance * f->ray_dir_y_0;
+		floor_x = PLAYER_X + row_distance * f->ray_dir_x_0 + thread->start * step_x;
+		floor_y = PLAYER_Y + row_distance * f->ray_dir_y_0 + thread->start * step_y;
 
-		int row_start = y * f->pitch; // 🔥 Precompute row memory index
-		for (x = 0; x < WIND_WIDTH; x++)
+		int row_start = y * WIND_WIDTH; // 🔥 Precompute row memory index
+		for (x = thread->start; x < thread->end; x++)
 		{
 			cell_x = (int)floor_x;
 			cell_y = (int)floor_y;
@@ -261,7 +259,7 @@ void	draw_floor_tile(t_game *game, t_floor_ceiling *f)
 		}
 	}
 }
-void	draw_floor_tile_2(t_game *game, t_floor_ceiling *f)
+void	draw_floor_tile_2(t_game *game, t_floor_ceiling *f, t_rendering_threads *thread)
 {
 	int		px, py, cell_x, cell_y;
 	int		floor_tx, floor_ty;
@@ -278,11 +276,11 @@ void	draw_floor_tile_2(t_game *game, t_floor_ceiling *f)
 		row_distance = (pos_z / p) * 2;
 		step_x = row_distance * (f->ray_dir_x_1 - f->ray_dir_x_0) / WIND_WIDTH;
 		step_y = row_distance * (f->ray_dir_y_1 - f->ray_dir_y_0) / WIND_WIDTH;
-		floor_x = PLAYER_X + row_distance * f->ray_dir_x_0;
-		floor_y = PLAYER_Y + row_distance * f->ray_dir_y_0;
+		floor_x = PLAYER_X + row_distance * f->ray_dir_x_0 + thread->start * step_x;
+		floor_y = PLAYER_Y + row_distance * f->ray_dir_y_0 + thread->start * step_y;
 
-		int row_start = y * f->pitch; // 🔥 Precompute row memory index
-		for (x = 0; x < WIND_WIDTH; x++)
+		int row_start = y * WIND_WIDTH; // 🔥 Precompute row memory index
+		for (x = thread->start; x < thread->end; x++)
 		{
 			cell_x = (int)floor_x;
 			cell_y = (int)floor_y;
@@ -313,8 +311,99 @@ void	draw_floor_tile_2(t_game *game, t_floor_ceiling *f)
 	}
 }
 
+void	draw_ceiling_tile(t_game *game, t_floor_ceiling *f, t_rendering_threads *thread)
+{
+	int		px, py, cell_x, cell_y;
+	int		ceiling_tx, ceiling_ty;
+	Uint32	ceiling_color;
+	float	ceiling_x, ceiling_y;
+	float	step_x, step_y, row_distance, pos_z;
+	int		y, x, p;
 
-void	cast_floor_and_ceiling(t_game *game, t_floor_ceiling *f)
+	pos_z = 0.402 * WIND_HEIGHT;
+	f->ceiling_pixels = game->textures.ceiling_dark.pixels;
+	for (y = 0; y < f->horizon; y++)
+	{
+		p = (WIND_HEIGHT / 2) - y + CAM_SHIFT;
+		row_distance = (pos_z / p) * 2;
+		step_x = row_distance * (f->ray_dir_x_1 - f->ray_dir_x_0) / WIND_WIDTH;
+		step_y = row_distance * (f->ray_dir_y_1 - f->ray_dir_y_0) / WIND_WIDTH;
+		ceiling_x = PLAYER_X + row_distance * f->ray_dir_x_0 + thread->start * step_x;
+		ceiling_y = PLAYER_Y + row_distance * f->ray_dir_y_0 + thread->start * step_y;
+
+		int row_start = y * WIND_WIDTH;
+		for (x = thread->start; x < thread->end; x++)
+		{
+			cell_x = (int)ceiling_x;
+			cell_y = (int)ceiling_y;
+			if (cell_x >= 0 && cell_y >= 0 && cell_x < MAP_WIDTH && cell_y < MAP_HEIGHT && MAPS[LEVEL][cell_y][cell_x] == '5')
+			{
+				ceiling_tx = ((int)(game->textures.ceiling_dark.width * (ceiling_x - cell_x))) & (game->textures.ceiling_dark.width - 1);
+				ceiling_ty = ((int)(game->textures.ceiling_dark.height * (ceiling_y - cell_y))) & (game->textures.ceiling_dark.height - 1);
+				ceiling_color = f->ceiling_pixels[game->textures.ceiling_dark.width * ceiling_ty + ceiling_tx];
+
+				ceiling_color = ceiling_color | 0x010101;
+
+				px = x;
+				py = y;
+
+				int pixel_index = row_start + px;
+				if (check_z_buffer(game, pixel_index, row_distance))
+					f->pixels[pixel_index] = ceiling_color;
+			}
+			ceiling_x += step_x;
+			ceiling_y += step_y;
+		}
+	}
+}
+
+void	draw_ceiling_tile_2(t_game *game, t_floor_ceiling *f, t_rendering_threads *thread)
+{
+	int		px, py, cell_x, cell_y;
+	int		ceiling_tx, ceiling_ty;
+	Uint32	ceiling_color;
+	float	ceiling_x, ceiling_y;
+	float	step_x, step_y, row_distance, pos_z;
+	int		y, x, p;
+
+	pos_z = 0.202 * WIND_HEIGHT;
+	f->ceiling_pixels = game->textures.ceiling_darker.pixels;
+	for (y = 0; y < f->horizon; y++)
+	{
+		p = (WIND_HEIGHT / 2) - y + CAM_SHIFT;
+		row_distance = (pos_z / p) * 2;
+		step_x = row_distance * (f->ray_dir_x_1 - f->ray_dir_x_0) / WIND_WIDTH;
+		step_y = row_distance * (f->ray_dir_y_1 - f->ray_dir_y_0) / WIND_WIDTH;
+		ceiling_x = PLAYER_X + row_distance * f->ray_dir_x_0 + thread->start * step_x;
+		ceiling_y = PLAYER_Y + row_distance * f->ray_dir_y_0 + thread->start * step_y;
+
+		int row_start = y * WIND_WIDTH;
+		for (x = thread->start; x < thread->end; x++)
+		{
+			cell_x = (int)ceiling_x;
+			cell_y = (int)ceiling_y;
+			if (cell_x >= 0 && cell_y >= 0 && cell_x < MAP_WIDTH && cell_y < MAP_HEIGHT && MAPS[LEVEL][cell_y][cell_x] == '6')
+			{
+				ceiling_tx = ((int)(game->textures.ceiling_darker.width * (ceiling_x - cell_x))) & (game->textures.ceiling_darker.width - 1);
+				ceiling_ty = ((int)(game->textures.ceiling_darker.height * (ceiling_y - cell_y))) & (game->textures.ceiling_darker.height - 1);
+				ceiling_color = f->ceiling_pixels[game->textures.ceiling_darker.width * ceiling_ty + ceiling_tx];
+
+				ceiling_color = ceiling_color | 0x010101;
+
+				px = x;
+				py = y;
+
+				int pixel_index = row_start + px;
+				if (check_z_buffer(game, pixel_index, row_distance))
+					f->pixels[pixel_index] = ceiling_color;
+			}
+			ceiling_x += step_x;
+			ceiling_y += step_y;
+		}
+	}
+}
+
+void	cast_floor_and_ceiling(t_game *game, t_floor_ceiling *f, t_rendering_threads *thread)
 {
 	int		px, py, cell_x, cell_y;
 	int		floor_tx, floor_ty, ceiling_tx, ceiling_ty;
@@ -338,9 +427,9 @@ void	cast_floor_and_ceiling(t_game *game, t_floor_ceiling *f)
 		row_distance = (pos_z / p) * 2;
 		step_x = row_distance * (f->ray_dir_x_1 - f->ray_dir_x_0) / WIND_WIDTH;
 		step_y = row_distance * (f->ray_dir_y_1 - f->ray_dir_y_0) / WIND_WIDTH;
-		ceiling_x = PLAYER_X + row_distance * f->ray_dir_x_0;
-		ceiling_y = PLAYER_Y + row_distance * f->ray_dir_y_0;
-		for (x = 0; x < WIND_WIDTH; x += 1)
+		ceiling_x = PLAYER_X + row_distance * f->ray_dir_x_0 + thread->start * step_x;
+		ceiling_y = PLAYER_Y + row_distance * f->ray_dir_y_0 + thread->start * step_y;
+		for (x = thread->start; x < thread->end; x += 1)
 		{
 			cell_x = (int)ceiling_x;
 			cell_y = (int)ceiling_y;
@@ -362,10 +451,10 @@ void	cast_floor_and_ceiling(t_game *game, t_floor_ceiling *f)
 						{
 							px = x + dx;
 							py = y + dy;
-							if (px < WIND_WIDTH && py >= 0 && py < WIND_HEIGHT)
+							if (px >= thread->start && px < thread->end && py >= 0 && py < WIND_HEIGHT)
 							{
-								if (check_z_buffer(game, py * f->pitch + px, row_distance))
-								f->pixels[py * f->pitch + px] = ceiling_color;
+								if (check_z_buffer(game, py * WIND_WIDTH + px, row_distance))
+								f->pixels[py * WIND_WIDTH + px] = ceiling_color;
 							}
 						}
 					}
@@ -381,9 +470,9 @@ void	cast_floor_and_ceiling(t_game *game, t_floor_ceiling *f)
 		row_distance = (pos_z / p) * 2;
 		step_x = row_distance * (f->ray_dir_x_1 - f->ray_dir_x_0) / WIND_WIDTH;
 		step_y = row_distance * (f->ray_dir_y_1 - f->ray_dir_y_0) / WIND_WIDTH;
-		floor_x = PLAYER_X + row_distance * f->ray_dir_x_0;
-		floor_y = PLAYER_Y + row_distance * f->ray_dir_y_0;
-		for (x = 0; x < WIND_WIDTH; x++)
+		floor_x = PLAYER_X + row_distance * f->ray_dir_x_0 + thread->start * step_x;
+		floor_y = PLAYER_Y + row_distance * f->ray_dir_y_0 + thread->start * step_y;
+		for (x = thread->start; x < thread->end; x++)
 		{
 			cell_x = (int)floor_x;
 			cell_y = (int)floor_y;
@@ -405,12 +494,12 @@ void	cast_floor_and_ceiling(t_game *game, t_floor_ceiling *f)
 						{
 							px = x + dx;
 							py = y + dy;
-							if (px < WIND_WIDTH && py < WIND_HEIGHT)
+							if (px >= thread->start && px < thread->end && py < WIND_HEIGHT)
 							{
-								if (check_z_buffer(game, py * f->pitch + px, row_distance))
+								if (check_z_buffer(game, py * WIND_WIDTH + px, row_distance))
 								{
-									set_z_buffer(game, row_distance, py * f->pitch + px);
-									f->pixels[py * f->pitch + px] = floor_color;
+									set_z_buffer(game, row_distance, py * WIND_WIDTH + px);
+									f->pixels[py * WIND_WIDTH + px] = floor_color;
 								}
 							}
 						}
@@ -445,34 +534,63 @@ void	render_mini_rays(t_game *game, t_mini_ray_node **head, void *pixels)
 	*head = NULL;
 }
 
-static void	draw_scene(t_game *game)
+void	rendering_threads(t_rendering_threads *thread)
 {
 	t_raycaster			r;
 	t_floor_ceiling		f;
 
-	if (!game->textures.screen_texture)
-			cleanup(game);
-	if (SDL_LockTexture(game->textures.screen_texture, NULL, (void **)&f.pixels, &f.pitch) != 0)
-		cleanup(game);
-
-	f.pitch /= sizeof(Uint32);
-	r.x = 0;
-	while (r.x < WIND_WIDTH)
+	f.pixels = thread->game->screen;
+	r.x = (thread->WIND_WIDTH * thread->thread_id) / thread->total_threads;
+	int end_x   = (thread->WIND_WIDTH * (thread->thread_id + 1)) / thread->total_threads;
+	thread->start = r.x;
+	thread->end = end_x;
+	while (r.x < end_x)
 	{
-		init_raycaster(&r, game);
+		init_raycaster(&r, thread->game);
 		init_raycaster_steps(&r);
-		perform_raycaster_steps(&r, game);
-		draw_wall(game, &r, f.pixels);
-		render_mini_rays(game, &r.mini_ray, f.pixels);
+		perform_raycaster_steps(&r, thread->game);
+		draw_wall(thread->game, &r, thread->game->screen);
+		render_mini_rays(thread->game, &r.mini_ray, f.pixels);
 		r.x++;
 	}
-	cast_floor_and_ceiling(game, &f);
-	draw_floor_tile(game, &f);
-	draw_floor_tile_2(game, &f);
+	cast_floor_and_ceiling(thread->game, &f, thread);
+	draw_floor_tile(thread->game, &f, thread);
+	draw_floor_tile_2(thread->game, &f, thread);
+	draw_ceiling_tile(thread->game, &f, thread);
+	draw_ceiling_tile_2(thread->game, &f, thread);
+}
+
+static void	draw_scene(t_game *game)
+{
+	int				pitch;
+	Uint32			*pixels;
+	t_rendering_threads	thread[game->P_cores];
+	SDL_Thread	*threads[game->P_cores];
+
+	for (int i = 0; i < game->P_cores; i++)
+	{
+		thread[i].game = game;
+		thread[i].thread_id = i;
+		thread[i].total_threads = game->P_cores;
+		thread[i].start = (WIND_WIDTH * i) / game->P_cores;
+		thread[i].end = (WIND_WIDTH * (i + 1)) / game->P_cores;
+		threads[i] = SDL_CreateThread((SDL_ThreadFunction)rendering_threads, "render", &thread[i]);
+	}
+	for (int i = 0; i < game->P_cores; i++)
+	{
+		SDL_WaitThread(threads[i], NULL);
+	}
+
+	if (!game->textures.screen_texture)
+		cleanup(game);
+	if (SDL_LockTexture(game->textures.screen_texture, NULL, (void **)&pixels, &pitch) != 0)
+		cleanup(game);
+	memcpy(pixels, game->screen, game->wind_height * pitch);
 	SDL_UnlockTexture(game->textures.screen_texture);
 	SDL_RenderCopy(game->renderer, game->textures.screen_texture, NULL, NULL);
 	clear_z_buffer(game);
 }
+
 
 
 void	render_next_frame(t_game *game)

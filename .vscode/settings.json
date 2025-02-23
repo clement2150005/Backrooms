@@ -1,6 +1,7 @@
 {
 	"files.associations": {
 		"backrooms.h": "c",
-		"variant": "c"
+		"variant": "c",
+		"sdl_ttf.h": "c"
 	}
 }
