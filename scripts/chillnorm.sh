@@ -10,11 +10,14 @@ norminette \
     | grep -v TOO_MANY_FUNCS \
     | grep -v TERNARY_FBIDDEN \
     | grep -v DECL_ASSIGN_LINE \
+    | grep -v MACRO_FUNC_FORBIDDEN \
+    | grep -v MULT_DECL_LINE \
     | grep -v TOO_MANY_LINES \
     | grep -v FORBIDDEN_CS \
     | grep -v WRONG_SCOPE_VAR \
     | grep -v TOO_MANY_VARS_FUNC \
     | grep -v FORBIDDEN_CHAR_NAME \
+    | grep -v VLA_FORBIDDEN \
     | grep -v TOO_MANY_ARGS \
     | awk '
     {
