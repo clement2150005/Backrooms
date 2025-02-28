@@ -36,8 +36,8 @@ static t_game	*game_struct_init(void)
 	game->fps = 0;
 	game->level = 0;
 	game->moving = 0;
-	game->wind_width = 0;
-	game->wind_height = 0;
+	game->texture_width = 0;
+	game->texture_height = 0;
 	game->P_cores = 0;
 	game->event = (SDL_Event){0};
 	game->input = (t_input){0};
@@ -50,6 +50,7 @@ static t_game	*game_struct_init(void)
 	game->renderer = NULL;
 	game->z_buffer = NULL;
 	game->screen = NULL;
+	game->maps_sizes = NULL;
 	keyboard_key_states_init(game);
 	get_P_cores(game);
 	return (game);
@@ -70,5 +71,6 @@ t_game	*init_game(void)
 	entities_init(game);
 	print_entities(game);
 	pixel_buffers_init(game);
+
 	return (game);
 }
