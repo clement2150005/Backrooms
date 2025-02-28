@@ -18,9 +18,6 @@ void	crouch(t_game *game)
 	static Uint32	press_start = 0;
 	Uint32			elapsed;
 
-	if (JUMP != NO_JUMP)
-		return;
-
 	if (KEYS[C])
 	{
 		if (press_start == 0)
@@ -51,7 +48,8 @@ void	crouch(t_game *game)
 		}
 		press_start = 0;
 	}
-
+	if (CROUCH_LOCK || FALLING)
+		return ;
 	eye_height_goal = 0;
 	if (CROUCH == STANDING)
 		eye_height_goal = TEXTURE_HEIGHT;
@@ -63,7 +61,7 @@ void	crouch(t_game *game)
 	// Smooth eye height adjustment using FRAME_TIME
 	double transition_speed = 2000.0 * FRAME_TIME;
 
-	if (EYE_HEIGHT < eye_height_goal)
+	if (EYE_HEIGHT < eye_height_goal && !STAND_LOCK)
 	{
 		EYE_HEIGHT += transition_speed;
 		if (EYE_HEIGHT > eye_height_goal)
@@ -85,7 +83,9 @@ void	jump(t_game *game)
 	float		dt;
 	float		eased;
 	float		new_height;
-
+	
+	if (JUMP_LOCK || FALLING)
+		JUMP = NO_JUMP;
 	if (JUMP != JUMP_UP)
 		return;
 	dt = FRAME_TIME; // Use actual frame time
@@ -144,10 +144,12 @@ void	gravity(t_game *game)
 	// Apply gravity if falling
 	if (FEET_HEIGHT > goal_height)
 	{
+		FALLING = TRUE; 
 		vertical_speed += GRAVITY * dt; // Gravity scales properly with time
 		FEET_HEIGHT -= vertical_speed;
-		if (FEET_HEIGHT < goal_height)
+		if (FEET_HEIGHT <= goal_height)
 		{
+			FALLING = FALSE;
 			FEET_HEIGHT = goal_height;
 			vertical_speed = 0.0f;
 		}
