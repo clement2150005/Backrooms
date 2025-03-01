@@ -31,7 +31,7 @@ static void	level_trigger(t_game *game)
 		game->player[LEVEL + 1]->cam.x = PLAYER_CAM_X;
 		game->player[LEVEL + 1]->cam.y = PLAYER_CAM_Y;
 		game->player[LEVEL + 1]->camera_shift = CAM_SHIFT;
-		game->player[LEVEL + 1]->standing_on = STANDING_ON;
+		game->player[LEVEL + 1]->feet_touch = FEET_TOUCH;
 		game->player[LEVEL + 1]->jumping = JUMP;
 		game->player[LEVEL + 1]->crouching = CROUCH;
 		game->player[LEVEL + 1]->speed = PLAYER_SPEED;
@@ -50,7 +50,6 @@ static void	game_loop(t_game *game)
 
 	running = TRUE;
 	LEVEL = START_LEVEL;
-
 	while (running)
 	{
 		sounds(game);
