@@ -1,4 +1,4 @@
-prefix=/Users/clement/Backrooms/vendor/SDL2_image-2.8.6/libs
+prefix=/Users/clement/vendortest/vendor/SDL2_image-2.8.6/libs
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

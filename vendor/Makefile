@@ -16,12 +16,20 @@ CMAKE_FLAGS = -DCMAKE_INSTALL_PREFIX=$(PREFIX) \
               -DCMAKE_OSX_ARCHITECTURES=$(ARCH) \
               -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
               -DSDL_STATIC=ON \
+              -DSDL2_DIR=$(CURDIR)/SDL2-2.28.5/build \
+              -DSDL2_LIBRARY=$(CURDIR)/SDL2-2.28.5/build/libSDL2.a \
+              -DSDL2_INCLUDE_DIR=$(CURDIR)/SDL2-2.28.5/include \
+              -DSDL2MAIN_LIBRARY=$(CURDIR)/SDL2-2.28.5/build/libSDL2main.a \
+              -DCMAKE_DISABLE_FIND_PACKAGE_SDL2=ON \
               -DCMAKE_C_FLAGS="-Wno-deprecated-declarations"
 
 FRAMEWORKS = -DCMAKE_EXE_LINKER_FLAGS="-framework Cocoa -framework CoreVideo \
                                        -framework IOKit -framework AudioToolbox \
                                        -framework CoreAudio -framework AVFoundation \
-                                       -framework CoreHaptics"
+                                       -framework ForceFeedback -framework GameController \
+                                       -framework CoreServices -framework Carbon \
+                                       -framework Metal -framework CoreHaptics \
+									   -liconv"
 
 all: $(LIB_DIR) $(INCLUDE_DIR) $(NAME) copy_libs copy_headers
 
