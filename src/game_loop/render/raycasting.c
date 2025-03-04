@@ -75,6 +75,7 @@ void	perform_raycaster_steps(t_raycaster *r, t_game *game)
 {
 	char	**map;
 
+	r->mini_ray = NULL;
 	map = MAPS[LEVEL];
 	while (map[r->map_y][r->map_x] != WALL)
 	{
@@ -86,8 +87,9 @@ void	perform_raycaster_steps(t_raycaster *r, t_game *game)
 		// 		return ;
 		// 	}
 		// }
+		
 		if (store_mini_ray(&r->mini_ray, *r, MAPS[LEVEL]))
-			cleanup(game);
+			cleanup(game);		
 		if (r->side_dist_x < r->side_dist_y)
 		{
 			r->side_dist_x += r->delta_dist_x;

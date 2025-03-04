@@ -23,8 +23,8 @@ set(SDL2MIXER_MOD_XMP               OFF)
 set(SDL2MIXER_MOD_XMP_LITE          OFF)
 
 set(SDL2MIXER_MP3                   OFF)
-set(SDL2MIXER_MP3_MINIMP3           ON)
-set(SDL2MIXER_MP3_MPG123            ON)
+set(SDL2MIXER_MP3_MINIMP3           OFF)
+set(SDL2MIXER_MP3_MPG123            OFF)
 
 set(SDL2MIXER_MIDI                  OFF)
 set(SDL2MIXER_MIDI_FLUIDSYNTH       OFF)

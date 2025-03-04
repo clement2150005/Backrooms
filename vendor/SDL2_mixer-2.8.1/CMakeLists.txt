@@ -126,9 +126,9 @@ endif()
 
 option(SDL2MIXER_MP3 "Enable MP3 music" OFF)
 
-cmake_dependent_option(SDL2MIXER_MP3_MINIMP3 "Support loading MP3 music via minimp3" ON SDL2MIXER_MP3 ON)
+cmake_dependent_option(SDL2MIXER_MP3_MINIMP3 "Support loading MP3 music via minimp3" OFF SDL2MIXER_MP3 OFF)
 
-cmake_dependent_option(SDL2MIXER_MP3_MPG123 "Support loading MP3 music via MPG123" ON SDL2MIXER_MP3 ON)
+cmake_dependent_option(SDL2MIXER_MP3_MPG123 "Support loading MP3 music via MPG123" OFF SDL2MIXER_MP3 OFF)
 cmake_dependent_option(SDL2MIXER_MP3_MPG123_SHARED "Dynamically load mpg123" "${SDL2MIXER_DEPS_SHARED}" SDL2MIXER_MP3_MPG123 OFF)
 
 if(SDL2MIXER_MP3 AND NOT (SDL2MIXER_MP3_MINIMP3 OR SDL2MIXER_MP3_MPG123))
@@ -137,16 +137,16 @@ endif()
 
 option(SDL2MIXER_MIDI "Enable MIDI music" OFF)
 
-cmake_dependent_option(SDL2MIXER_MIDI_FLUIDSYNTH "Support FluidSynth MIDI output" ON "SDL2MIXER_MIDI;NOT SDL2MIXER_VENDORED" OFF)
+cmake_dependent_option(SDL2MIXER_MIDI_FLUIDSYNTH "Support FluidSynth MIDI output" OFF "SDL2MIXER_MIDI;NOT SDL2MIXER_VENDORED" OFF)
 cmake_dependent_option(SDL2MIXER_MIDI_FLUIDSYNTH_SHARED "Dynamically load libfluidsynth" "${SDL2MIXER_DEPS_SHARED}" SDL2MIXER_MIDI_FLUIDSYNTH OFF)
 
 if(WIN32 OR APPLE OR HAIKU)
-    cmake_dependent_option(SDL2MIXER_MIDI_NATIVE "Support native MIDI output" ON SDL2MIXER_MIDI OFF)
+    cmake_dependent_option(SDL2MIXER_MIDI_NATIVE "Support native MIDI output" OFF SDL2MIXER_MIDI OFF)
 else()
     set(SDL2MIXER_MIDI_NATIVE OFF)
 endif()
 
-cmake_dependent_option(SDL2MIXER_MIDI_TIMIDITY "Support timidity MIDI output" ON SDL2MIXER_MIDI OFF)
+cmake_dependent_option(SDL2MIXER_MIDI_TIMIDITY "Support timidity MIDI output" OFF SDL2MIXER_MIDI OFF)
 
 if(SDL2MIXER_MIDI AND NOT (SDL2MIXER_MIDI_TIMIDITY OR SDL2MIXER_MIDI_NATIVE OR SDL2MIXER_MIDI_FLUIDSYNTH))
     message(FATAL_ERROR "MIDI support was enabled (SDL2MIXER_MIDI) but neither FluidSynth (SDL2MIXER_MIDI_FLUIDSYNTH), native (SDL2MIXER_MIDI_NATIVE) or timidity (SDL2MIXER_MIDI_TIMIDITY) was enabled")
